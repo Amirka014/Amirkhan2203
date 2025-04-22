@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Қолдау қызметі</title>
+  
+  <style>
+    body {
+      background-color: #f0f2f5;
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+      color: #333;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    h1 {
+      background-color: #2c3e50;
+      color: white;
+      padding: 20px;
+      text-align: center;
+      margin: 0;
+    }
+
+    .theme-toggle, .lang-toggle {
+      position: fixed;
+      top: 20px;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      z-index: 999;
+      font-size: 14px;
+    }
+
+    .theme-toggle { right: 20px; }
+    .lang-toggle { right: 120px; }
+
+    .export-btn {
+      display: block;
+      margin: 20px auto 10px;
+      background-color: #9b59b6;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      font-size: 16px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .support-form {
+      max-width: 600px;
+      margin: 30px auto;
+      background-color: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .support-form label {
+      font-weight: bold;
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    .support-form input,
+    .support-form textarea {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 18px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+    }
+
+    .support-form textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    .support-form button {
+      background-color: #4CAF50;
+      color: white;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .confirmation {
+      text-align: center;
+      font-size: 16px;
+      color: green;
+      margin-top: 15px;
+      opacity: 0;
+      transition: opacity 0.6s ease;
+    }
+
+    .confirmation.visible {
+      opacity: 1;
+    }
+
+    .contact-info {
+      text-align: center;
+      margin-top: 30px;
+      font-size: 16px;
+    }
+
+    .contact-info a {
+      color: #3498db;
+      text-decoration: none;
+    }
+
+    .back-link {
+      text-align: center;
+      margin: 30px 0;
+    }
+
+    .back-link a {
+      color: #3498db;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .support-log {
+      max-width: 600px;
+      margin: 20px auto;
+      padding: 20px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+
+    .support-log h3 {
+      margin-top: 0;
+      color: #2c3e50;
+    }
+
+    .dark-mode {
+      background-color: #1c1c1c;
+      color: #f0f0f0;
+    }
+
+    .dark-mode .support-form,
+    .dark-mode .support-log,
+    .dark-mode .contact-info {
+      background-color: #2c2c2c;
+      color: #ddd;
+    }
+
+    .dark-mode .support-form input,
+    .dark-mode .support-form textarea {
+      background-color: #444;
+      color: white;
+      border: 1px solid #666;
+    }
+
+    .dark-mode .contact-info a,
+    .dark-mode .back-link a {
+      color: #1abc9c;
+    }
+
+    .dark-mode .export-btn {
+      background-color: #8e44ad;
+    }
+  </style>
+</head>
+<body onload="loadTheme(); loadUserInfo(); showRecentMessages();">
+
+  <button class="theme-toggle" onclick="toggleTheme()">🌙 / ☀️</button>
+  <button class="lang-toggle" onclick="switchLanguage()">🌐 Тіл</button>
+
+  <h1>Қолдау қызметі</h1>
+
+  
+  
+
+  <div class="support-form">
+    <form id="supportForm">
+      <label for="name">Атыңыз:</label>
+      <input type="text" id="name" name="name" required>
+      <label for="email">Email:</label>
+      <input type="email" id="email" name="email" required>
+      <label for="message">Хабарлама:</label>
+      <textarea id="message" name="message" required></textarea>
+      <button type="submit">Жіберу</button>
+    </form>
+    <div class="confirmation" id="confirmation">✅ Рақмет! Біз сізбен жақын арада байланысамыз.</div>
+  </div>
+
+  <div class="support-log" id="support-log"></div>
+
+  <div class="contact-info">
+    <p>Email: <a href="mailto:amirhan200606@gmail.com">amirhan200606@gmail.com</a></p>
+    <p>Телефон: <a href="tel:+77474757076">+7 (707) 400-71-87</a></p>
+    <p><a href="stat.html">📊 Статистика бетіне өту</a></p>
+  </div>
+
+  <div class="back-link">
+    <a href="index.html">← Басты бетке оралу</a>
+  </div>
+
+  <script>
+    const form = document.getElementById("supportForm");
+    const confirmation = document.getElementById("confirmation");
+
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      const name = document.getElementById("name").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const message = document.getElementById("message").value.trim();
+
+      if (name && email && message) {
+        const allMessages = JSON.parse(localStorage.getItem("supportMessages") || "[]");
+        const newMessage = { name, email, message, date: new Date().toLocaleString("kk-KZ") };
+        allMessages.push(newMessage);
+        localStorage.setItem("supportMessages", JSON.stringify(allMessages));
+        localStorage.setItem("supportName", name);
+        localStorage.setItem("supportEmail", email);
+
+        form.reset();
+        confirmation.classList.add("visible");
+        setTimeout(() => confirmation.classList.remove("visible"), 4000);
+        showRecentMessages();
+      }
+    });
+
+    function toggleTheme() {
+      document.body.classList.toggle("dark-mode");
+      const mode = document.body.classList.contains("dark-mode") ? "dark" : "light";
+      localStorage.setItem("theme", mode);
+    }
+
+    function loadTheme() {
+      if (localStorage.getItem("theme") === "dark") {
+        document.body.classList.add("dark-mode");
+      }
+    }
+
+    function loadUserInfo() {
+      const savedName = localStorage.getItem("supportName");
+      const savedEmail = localStorage.getItem("supportEmail");
+      if (savedName) document.getElementById("name").value = savedName;
+      if (savedEmail) document.getElementById("email").value = savedEmail;
+    }
+
+    function switchLanguage() {
+      const langs = ['kk', 'ru', 'en'];
+      let current = localStorage.getItem('lang') || 'kk';
+      const next = langs[(langs.indexOf(current) + 1) % langs.length];
+      localStorage.setItem('lang', next);
+      alert(`🌐 Тіл ауыстырылды: ${next.toUpperCase()}`);
+    }
+
+     = window.jspdf;
+      const doc = new jsPDF();
+      const routes = JSON.parse(localStorage.getItem("tickets") || "[]");
+      if (routes.length === 0) return alert("Маршруттар табылмады.");
+
+      doc.setFontSize(16);
+      doc.text("🧾 Барлық маршруттар тізімі", 20, 20);
+      doc.setFontSize(12);
+      let y = 30;
+      routes.forEach((r) => {
+        doc.text(`📍 ${r.route}`, 20, y);
+        doc.text(`👥 ${r.people} адам | 💰 ${r.price} ₸ | 🎫 ${r.ticketNumber}`, 20, y + 10);
+        doc.text(`🗓️ ${r.date}`, 20, y + 20);
+        y += 30;
+        if (y > 270) { doc.addPage(); y = 20; }
+      });
+      
+    }
+
+     = window.jspdf;
+      const doc = new jsPDF();
+      const messages = JSON.parse(localStorage.getItem("supportMessages") || "[]");
+      if (messages.length === 0) return alert("Хабарламалар табылмады.");
+
+      doc.setFontSize(16);
+      doc.text("📩 Барлық қолдау сұраныстары", 20, 20);
+      let y = 30;
+      doc.setFontSize(12);
+      messages.forEach((msg) => {
+        doc.text(`👤 ${msg.name} | 📧 ${msg.email}`, 20, y);
+        y += 10;
+        doc.text(`🗓 ${msg.date}`, 20, y);
+        y += 10;
+        const lines = doc.splitTextToSize(`✉️ ${msg.message}`, 170);
+        lines.forEach(line => { doc.text(line, 20, y); y += 8; });
+        y += 10;
+        if (y > 270) { doc.addPage(); y = 20; }
+      });
+      
+    }
+
+    function showRecentMessages() {
+      const log = document.getElementById("support-log");
+      const messages = JSON.parse(localStorage.getItem("supportMessages") || "[]").slice(-3).reverse();
+      log.innerHTML = "<h3>🕘 Соңғы сұраныстар</h3>";
+      messages.forEach(msg => {
+        log.innerHTML += `<p><strong>${msg.name}</strong> (${msg.date}):<br><em>${msg.message}</em></p><hr/>`;
+      });
+    }
+  </script>
+</body>
+</html>

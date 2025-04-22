@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Бюджетке негізделген саяхат генераторы</title>
+
+  <style>
+    body {
+      background-color: #f0f2f5;
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    header {
+      background-color: #2c3e50;
+      color: #ecf0f1;
+      padding: 20px;
+      text-align: center;
+      position: relative;
+    }
+
+    .theme-toggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #3498db;
+      color: white;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      z-index: 999;
+    }
+
+    .lang-switch {
+      position: absolute;
+      top: 24px;
+      left: 20px;
+    }
+
+    .lang-switch select {
+      padding: 6px 12px;
+      border-radius: 6px;
+      border: none;
+    }
+
+    .budget-container {
+      max-width: 600px;
+      margin: 40px auto;
+      background-color: #ffffff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.06);
+      animation: fadeIn 0.6s ease;
+    }
+
+    @keyframes fadeIn {
+      from {opacity: 0; transform: translateY(20px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+
+    label {
+      font-size: 17px;
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    input[type="number"],
+    input[type="date"] {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+
+    button {
+      background-color: #3498db;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    button:hover {
+      background-color: #2980b9;
+    }
+
+    .result {
+      margin-top: 30px;
+      padding: 20px;
+      background-color: #e8f8f5;
+      border-left: 6px solid #1abc9c;
+      border-radius: 8px;
+      display: none;
+    }
+
+    .pay-button {
+      display: inline-block;
+      margin-top: 15px;
+      background-color: #1abc9c;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 6px;
+      text-decoration: none;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+
+    .back-link {
+      text-align: center;
+      margin-top: 30px;
+    }
+
+    .back-link a {
+      color: #2c3e50;
+      text-decoration: none;
+    }
+
+    .dark-mode {
+      background-color: #1c1c1c;
+      color: #f1f1f1;
+    }
+
+    .dark-mode header {
+      background-color: #111;
+    }
+
+    .dark-mode .budget-container {
+      background-color: #2c2c2c;
+    }
+
+    .dark-mode input {
+      background-color: #444;
+      color: #f1f1f1;
+      border: 1px solid #666;
+    }
+
+    .dark-mode .result {
+      background-color: #264d49;
+    }
+
+    @media (max-width: 600px) {
+      .budget-container {
+        margin: 20px;
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+
+<body onload="loadTheme(); loadSavedBudget();">
+
+  <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
+
+  <div class="lang-switch">
+    <select onchange="changeLang(this.value)">
+      <option value="kk">Қазақша</option>
+      <option value="ru">Русский</option>
+      <option value="en">English</option>
+    </select>
+  </div>
+
+  <header>
+    <h1>Бюджетке негізделген саяхат генераторы</h1>
+  </header>
+
+  <div class="budget-container">
+    <label for="budget">💰 Бюджетіңіз (₸):</label>
+    <input type="number" id="budget" placeholder="Мысалы, 20000" min="0" />
+
+    <label for="people">👤 Адам саны:</label>
+    <input type="number" id="people" placeholder="Мысалы, 1" min="1" value="1" />
+
+    <label for="date">📆 Саяхат күні:</label>
+    <input type="date" id="date" />
+
+    <button onclick="generateRoute()">Маршрутты таңдау</button>
+
+    <div class="result" id="result-box">
+      <p id="route-text"></p>
+      <p id="remaining-text"></p>
+      <a id="pay-link" href="#" class="pay-button">💳 Төлем жасау</a>
+    </div>
+  </div>
+
+  <div class="back-link">
+    <a href="index.html">← Басты бетке қайту</a>
+  </div>
+
+  <script>
+    function toggleTheme() {
+      document.body.classList.toggle("dark-mode");
+      const isDark = document.body.classList.contains("dark-mode");
+      localStorage.setItem("theme", isDark ? "dark" : "light");
+      document.querySelector('.theme-toggle').textContent = isDark ? "☀️" : "🌙";
+    }
+
+    function loadTheme() {
+      if (localStorage.getItem("theme") === "dark") {
+        document.body.classList.add("dark-mode");
+        document.querySelector('.theme-toggle').textContent = "☀️";
+      }
+    }
+
+    function changeLang(lang) {
+      localStorage.setItem("lang", lang);
+      alert("🌐 Таңдалған тіл: " + lang);
+    }
+
+    function generateRoute() {
+      const budget = parseInt(document.getElementById("budget").value);
+      const people = parseInt(document.getElementById("people").value);
+      const date = document.getElementById("date").value;
+      const resultBox = document.getElementById("result-box");
+      const routeText = document.getElementById("route-text");
+      const remainingText = document.getElementById("remaining-text");
+      const payLink = document.getElementById("pay-link");
+
+      if (!budget || budget <= 0 || !people || people <= 0 || !date) {
+        alert("Барлық мәліметтерді дұрыс енгізіңіз.");
+        return;
+      }
+
+      localStorage.setItem("savedBudget", budget);
+      localStorage.setItem("savedPeople", people);
+      localStorage.setItem("savedDate", date);
+
+      let route = "", pricePer = 0;
+
+      if (budget < 7000) {
+        route = "Қала ішілік жаяу тур (Алматы)";
+        pricePer = 5000;
+      } else if (budget < 12000) {
+        route = "Шымкент — Түркістан автобустық саяхат";
+        pricePer = 9000;
+      } else if (budget < 18000) {
+        route = "Тараз — Алматы тарихи туры";
+        pricePer = 15000;
+      } else if (budget < 25000) {
+        route = "Қызылорда — Шымкент табиғи маршрут";
+        pricePer = 22000;
+      } else if (budget < 35000) {
+        route = "Астана — Бурабай демалысы";
+        pricePer = 32000;
+      } else if (budget < 50000) {
+        route = "Көлсай — Чарын шатқалы (2 күндік)";
+        pricePer = 47000;
+      } else {
+        route = "Алтайға толық апта саяхаты";
+        pricePer = 75000;
+      }
+
+      const totalPrice = pricePer * people;
+
+      routeText.textContent = `🧭 Ұсынылған маршрут: ${route}`;
+      remainingText.textContent = `💸 Жалпы бағасы: ${totalPrice} ₸ | Қалған сома: ${budget - totalPrice} ₸`;
+
+      payLink.href = `payment.html?price=${totalPrice}&route=${encodeURIComponent(route)}&people=${people}&date=${encodeURIComponent(date)}`;
+
+      resultBox.style.display = "block";
+
+      const stats = JSON.parse(localStorage.getItem("routeStats") || "{}");
+      stats[route] = (stats[route] || 0) + 1;
+      localStorage.setItem("routeStats", JSON.stringify(stats));
+
+      const history = JSON.parse(localStorage.getItem("tickets") || "[]");
+      history.push({
+        route,
+        price: totalPrice,
+        people,
+        date,
+        ticketNumber: "T-" + Date.now()
+      });
+      localStorage.setItem("tickets", JSON.stringify(history));
+    }
+
+    function loadSavedBudget() {
+      const budget = localStorage.getItem("savedBudget");
+      const people = localStorage.getItem("savedPeople");
+      const date = localStorage.getItem("savedDate");
+      if (budget) document.getElementById("budget").value = budget;
+      if (people) document.getElementById("people").value = people;
+      if (date) document.getElementById("date").value = date;
+    }
+  </script>
+</body>
+</html>

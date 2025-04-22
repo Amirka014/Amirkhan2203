@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Жиі қойылатын сұрақтар</title>
+  <style>
+    body {
+      background-color: #f0f2f5;
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    header {
+      background-color: #2c3e50;
+      color: white;
+      padding: 20px;
+      text-align: center;
+      position: relative;
+    }
+
+    .lang-switch {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+    }
+
+    .lang-switch select {
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 14px;
+      border: none;
+    }
+
+    main {
+      padding: 40px 20px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .faq-search {
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .faq-search input {
+      width: 100%;
+      max-width: 500px;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 15px;
+    }
+
+    .faq-item {
+      background-color: white;
+      margin-bottom: 15px;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+      transition: transform 0.2s ease;
+      cursor: pointer;
+      overflow: hidden;
+    }
+
+    .faq-item:hover {
+      transform: scale(1.01);
+    }
+
+    .faq-item h3 {
+      margin: 0;
+      font-size: 18px;
+      color: #3498db;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .faq-item h3::before {
+      content: "❓";
+      margin-right: 8px;
+    }
+
+    .faq-item p {
+      max-height: 0;
+      overflow: hidden;
+      margin: 0;
+      transition: max-height 0.4s ease, opacity 0.3s ease;
+      opacity: 0;
+      font-size: 15px;
+      color: #333;
+      margin-top: 10px;
+      line-height: 1.5;
+    }
+
+    .faq-item.active p {
+      max-height: 300px;
+      opacity: 1;
+    }
+
+    .faq-add {
+      margin-top: 40px;
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+
+    .faq-add input, .faq-add textarea {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      font-size: 14px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    .faq-add button {
+      background-color: #3498db;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      margin-top: 10px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .back-link {
+      text-align: center;
+      margin: 30px;
+    }
+
+    .back-link a {
+      color: #3498db;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .back-link a:hover {
+      text-decoration: underline;
+    }
+
+    .theme-toggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #3498db;
+      color: white;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      z-index: 999;
+    }
+
+    .scroll-top {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      display: none;
+      background-color: #3498db;
+      color: #fff;
+      padding: 10px 15px;
+      border-radius: 8px;
+      font-size: 14px;
+      cursor: pointer;
+      z-index: 999;
+    }
+
+    .dark-mode {
+      background-color: #1c1c1c;
+      color: #f1f1f1;
+    }
+
+    .dark-mode header {
+      background-color: #111;
+    }
+
+    .dark-mode .faq-item {
+      background-color: #2c2c2c;
+      color: #f1f1f1;
+    }
+
+    .dark-mode .faq-item p {
+      color: #ccc;
+    }
+
+    .dark-mode .faq-add {
+      background-color: #2c2c2c;
+    }
+
+    .dark-mode input, .dark-mode textarea {
+      background-color: #444;
+      color: #fff;
+      border-color: #777;
+    }
+
+    @media (max-width: 600px) {
+      .faq-item h3 { font-size: 16px; }
+      .faq-item p { font-size: 14px; }
+    }
+  </style>
+</head>
+<body>
+
+  <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
+  <div class="scroll-top" id="scrollBtn" onclick="scrollToTop()">↑ Жоғары</div>
+
+  <header>
+    <h1>Жиі қойылатын сұрақтар</h1>
+    <div class="lang-switch">
+      <select onchange="changeLang(this.value)">
+        <option value="kk">Қазақша</option>
+        <option value="ru">Русский</option>
+        <option value="en">English</option>
+      </select>
+    </div>
+  </header>
+
+  <main>
+    <div class="faq-search">
+      <input type="text" id="faqSearch" placeholder="Сұрақты іздеу..." oninput="searchFAQ(this.value)">
+    </div>
+
+    <div id="faq-list"></div>
+
+    <div class="faq-add">
+      <h3>➕ Жаңа сұрақ қосу</h3>
+      <input type="text" id="newQuestion" placeholder="Сұрақ..." />
+      <textarea id="newAnswer" placeholder="Жауап..." rows="3"></textarea>
+      <button onclick="addFAQ()">Қосу</button>
+    </div>
+  </main>
+
+  <div class="back-link">
+    <a href="index.html">← Басты бетке қайту</a>
+  </div>
+
+  <script>
+    const defaultFAQ = [
+      { question: "Маршрутты қалай таңдауға болады?", answer: "“Маршруттар” бетіне өтіп, қалаған бағыттың жанындағы “Таңдау” батырмасын басыңыз." },
+      { question: "Саяхат үшін төленген ақшаны қайтаруға бола ма?", answer: "Иә, жолға шығардан 48 сағат бұрын қайтаруға болады. Қолдау қызметіне хабарласыңыз." },
+      { question: "Қандай төлем түрлері бар?", answer: "Біз Visa, MasterCard және Kaspi карталарын қабылдаймыз." },
+      { question: "Билет қалай беріледі?", answer: "Төлемнен кейін сізге билет 'Билеттер' бетінде көрсетіледі: бағыт, күн және билет нөмірі жазылады." }
+    ];
+
+    function loadFAQ() {
+      const saved = JSON.parse(localStorage.getItem("faqItems") || "null");
+      return saved || defaultFAQ;
+    }
+
+    function renderFAQ(faqList) {
+      const container = document.getElementById("faq-list");
+      container.innerHTML = "";
+      faqList.forEach((item, i) => {
+        const div = document.createElement("div");
+        div.className = "faq-item";
+        div.innerHTML = `<h3>${item.question}</h3><p>${item.answer}</p>`;
+        div.addEventListener("click", () => {
+          document.querySelectorAll(".faq-item").forEach(f => f.classList.remove("active"));
+          div.classList.add("active");
+          saveOpenFAQ(i);
+        });
+        container.appendChild(div);
+      });
+      loadOpenFAQ();
+    }
+
+    function addFAQ() {
+      const q = document.getElementById("newQuestion").value.trim();
+      const a = document.getElementById("newAnswer").value.trim();
+      if (!q || !a) return alert("Сұрақ пен жауапты толтырыңыз!");
+
+      const all = loadFAQ();
+      all.push({ question: q, answer: a });
+      localStorage.setItem("faqItems", JSON.stringify(all));
+      renderFAQ(all);
+
+      document.getElementById("newQuestion").value = "";
+      document.getElementById("newAnswer").value = "";
+    }
+
+    function searchFAQ(query) {
+      const faq = loadFAQ();
+      const filtered = faq.filter(item =>
+        item.question.toLowerCase().includes(query.toLowerCase()) ||
+        item.answer.toLowerCase().includes(query.toLowerCase())
+      );
+      renderFAQ(filtered);
+    }
+
+    function toggleTheme() {
+      document.body.classList.toggle("dark-mode");
+      const isDark = document.body.classList.contains("dark-mode");
+      localStorage.setItem("theme", isDark ? "dark" : "light");
+      document.querySelector('.theme-toggle').textContent = isDark ? "☀️" : "🌙";
+    }
+
+    function loadTheme() {
+      if (localStorage.getItem("theme") === "dark") {
+        document.body.classList.add("dark-mode");
+        document.querySelector('.theme-toggle').textContent = "☀️";
+      }
+    }
+
+    function scrollToTop() {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function changeLang(lang) {
+      localStorage.setItem("lang", lang);
+      alert("🌐 Таңдалған тіл: " + lang.toUpperCase());
+    }
+
+    function saveOpenFAQ(index) {
+      localStorage.setItem("lastOpenFAQ", index);
+    }
+
+    function loadOpenFAQ() {
+      const last = localStorage.getItem("lastOpenFAQ");
+      if (last !== null) {
+        const items = document.querySelectorAll(".faq-item");
+        if (items[last]) items[last].classList.add("active");
+      }
+    }
+
+    window.addEventListener("scroll", () => {
+      document.getElementById("scrollBtn").style.display = window.scrollY > 200 ? "block" : "none";
+    });
+
+    window.onload = () => {
+      loadTheme();
+      renderFAQ(loadFAQ());
+    };
+  </script>
+
+</body>
+</html>

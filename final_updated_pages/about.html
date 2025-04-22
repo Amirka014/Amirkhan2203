@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Біз туралы</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f4f7fa;
+      color: #2c3e50;
+      transition: 0.3s ease;
+    }
+
+    header {
+      background-color: #2c3e50;
+      color: white;
+      padding: 25px;
+      text-align: center;
+      position: relative;
+    }
+
+    nav select {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+
+    .theme-toggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #3498db;
+      color: white;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      z-index: 999;
+    }
+
+    .scroll-top {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #3498db;
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 50%;
+      font-size: 18px;
+      display: none;
+      cursor: pointer;
+      z-index: 999;
+    }
+
+    main {
+      padding: 40px 20px;
+      max-width: 1000px;
+      margin: auto;
+    }
+
+    h2 {
+      color: #2980b9;
+      margin-top: 40px;
+    }
+
+    p {
+      font-size: 17px;
+      line-height: 1.6;
+      color: #444;
+    }
+
+    .team {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+    }
+
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      width: 250px;
+      text-align: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+      transition: transform 0.3s;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+    }
+
+    .card img {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      border: 3px solid #3498db;
+      margin-bottom: 10px;
+    }
+
+    .thoughts {
+      background: #ecf0f1;
+      border-radius: 10px;
+      padding: 15px;
+      margin-top: 20px;
+    }
+
+    textarea {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      margin-top: 10px;
+    }
+
+    .btn {
+      background-color: #3498db;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      margin-top: 10px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .btn:hover {
+      background-color: #2980b9;
+    }
+
+    .faq-item {
+      margin-bottom: 15px;
+    }
+
+    .faq-question {
+      cursor: pointer;
+      background: #dfe6e9;
+      padding: 10px;
+      border-radius: 6px;
+    }
+
+    .faq-answer {
+      display: none;
+      padding: 8px 12px;
+      background-color: #f9f9f9;
+      border-left: 4px solid #3498db;
+      margin-top: 5px;
+      border-radius: 4px;
+    }
+
+    .faq-item.active .faq-answer {
+      display: block;
+    }
+
+    .partners {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 20px;
+    }
+
+    .partners img {
+      height: 150px;
+      opacity: 0.8;
+      transition: all 0.3s ease;
+    }
+
+    .partners img:hover {
+      opacity: 1;
+      transform: scale(1.1);
+    }
+
+    footer {
+      background-color: #2c3e50;
+      color: white;
+      text-align: center;
+      padding: 20px;
+      margin-top: 40px;
+    }
+
+    .dark-mode {
+      background-color: #1c1c1c;
+      color: #f1f1f1;
+    }
+
+    .dark-mode header,
+    .dark-mode footer {
+      background-color: #111;
+    }
+
+    .dark-mode .card {
+      background-color: #2c2c2c;
+    }
+
+    .dark-mode .faq-question {
+      background: #3a3a3a;
+    }
+
+    .dark-mode .faq-answer {
+      background-color: #444;
+    }
+
+    .dark-mode .thoughts {
+      background-color: #2c2c2c;
+    }
+
+    .dark-mode textarea {
+      background-color: #444;
+      color: white;
+      border: 1px solid #666;
+    }
+
+    @media (max-width: 600px) {
+      .team { flex-direction: column; align-items: center; }
+      .card { width: 90%; }
+      nav select { top: 10px; left: 10px; }
+    }
+  </style>
+</head>
+<body onload="initPage()">
+  <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
+  <button class="scroll-top" id="scrollBtn" onclick="scrollToTop()">↑</button>
+
+  <header>
+    <h1>Біз туралы</h1>
+    <nav>
+      <select onchange="changeLang(this.value)">
+        <option value="kk">Қазақша</option>
+        <option value="ru">Русский</option>
+        <option value="en">English</option>
+      </select>
+    </nav>
+  </header>
+
+  <main>
+    <section>
+      <h2>🎯 Мақсатымыз</h2>
+      <p>Саяхаттауды бәріне қолжетімді ету — біздің басты мақсатымыз. Бұл генератор сіздің бюджетіңізге сай ең тиімді бағыттарды автоматты түрде ұсынады.</p>
+    </section>
+
+    <section>
+      <h2>👥 Командамыз</h2>
+      <div class="team">
+        <div class="card">
+          <img src="https://i.pinimg.com/originals/dc/91/eb/dc91ebc3c7e4953994405bc2447337f5.jpg" alt="Naike" />
+          <h3>Naike</h3>
+          <p>мотиватор</p>
+        </div>
+        <div class="card">
+          <img src="https://i.pinimg.com/736x/a6/71/13/a67113986cc2f2226c8ec9bd60476467.jpg" alt="Амирхан" />
+          <h3>Амирхан</h3>
+          <p>разработчик</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>✍️ Пікір қалдырыңыз <span id="commentCount"></span></h2>
+      <textarea id="user-thought" rows="3" placeholder="Ойыңызды жазыңыз..."></textarea>
+      <button class="btn" onclick="saveThought()">Жіберу</button>
+      <div class="thoughts" id="thoughtList"></div>
+    </section>
+
+    <section>
+      <h2>❓ Жиі қойылатын сұрақтар</h2>
+      <div class="faq-item" onclick="toggleFAQ(this)">
+        <div class="faq-question">Бұл сервис не үшін қажет?</div>
+        <div class="faq-answer">Уақытыңызды үнемдеп, бюджетті оңтайлы пайдалану үшін бағыттарды автоматты түрде таңдайды.</div>
+      </div>
+      <div class="faq-item" onclick="toggleFAQ(this)">
+        <div class="faq-question">Бағыттар қалай анықталады?</div>
+        <div class="faq-answer">Сіз енгізген бюджетке байланысты маршруттар тізімі жасалады.</div>
+      </div>
+    </section>
+
+    <section>
+      <h2>🤝 Серіктестер</h2>
+      <div class="partners">
+        <img src="https://frankfurt.apollo.olxcdn.com/v1/files/tgsrvs05nan4-KZ/image;s=971x971" alt="Kaspi">
+        <img src="https://taplink.st/a/2/1/9/a/a359a4.jpg?1" alt="Halyk Bank">
+        <img src="https://mir-s3-cdn-cf.behance.net/project_modules/max_1200/0200641753856.59cbd556becc6.jpg" alt="Nomad Club">
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2025 Саяхат генераторы. Барлық құқықтар қорғалған.</p>
+  </footer>
+
+  <script>
+    function toggleTheme() {
+      const body = document.body;
+      body.classList.toggle("dark-mode");
+      const mode = body.classList.contains("dark-mode") ? "dark" : "light";
+      localStorage.setItem("theme", mode);
+      document.querySelector('.theme-toggle').textContent = mode === "dark" ? "☀️" : "🌙";
+    }
+
+    function scrollToTop() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function changeLang(lang) {
+      localStorage.setItem("lang", lang);
+      alert("Тіл өзгертілді: " + lang.toUpperCase());
+    }
+
+    function saveThought() {
+      const input = document.getElementById("user-thought");
+      const val = input.value.trim();
+      if (!val) return alert("Ойыңызды жазыңыз!");
+      const all = JSON.parse(localStorage.getItem("about_thoughts") || "[]");
+      all.push(val);
+      localStorage.setItem("about_thoughts", JSON.stringify(all));
+      input.value = "";
+      showThoughts();
+    }
+
+    function showThoughts() {
+      const thoughts = JSON.parse(localStorage.getItem("about_thoughts") || "[]");
+      const list = document.getElementById("thoughtList");
+      document.getElementById("commentCount").textContent = `(${thoughts.length})`;
+      list.innerHTML = thoughts.map(t => `<p>💬 ${t}</p>`).join("");
+    }
+
+    function toggleFAQ(elem) {
+      document.querySelectorAll(".faq-item").forEach(el => el.classList.remove("active"));
+      elem.classList.add("active");
+    }
+
+    function initPage() {
+      if (localStorage.getItem("theme") === "dark") {
+        document.body.classList.add("dark-mode");
+        document.querySelector('.theme-toggle').textContent = "☀️";
+      }
+      const lang = localStorage.getItem("lang");
+      if (lang) document.querySelector("select").value = lang;
+
+      showThoughts();
+
+      window.addEventListener("scroll", () => {
+        document.getElementById("scrollBtn").style.display = window.scrollY > 100 ? "block" : "none";
+      });
+    }
+  </script>
+</body>
+</html>

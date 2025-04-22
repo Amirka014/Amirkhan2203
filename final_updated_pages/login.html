@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Кіру</title>
+  <style>
+    body {
+      background-color: #f0f2f5;
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    header {
+      background-color: var(--header-bg, #2c3e50);
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+
+    main {
+      max-width: 400px;
+      margin: 40px auto;
+      background-color: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.06);
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    input[type="email"],
+    input[type="password"] {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 16px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+    }
+
+    .password-wrapper {
+      position: relative;
+    }
+
+    .toggle-password {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    .remember {
+      margin-top: -10px;
+      margin-bottom: 20px;
+      font-size: 14px;
+    }
+
+    button {
+      background-color: #3498db;
+      color: white;
+      padding: 12px;
+      border: none;
+      width: 100%;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #2980b9;
+    }
+
+    .message, .error {
+      text-align: center;
+      font-size: 14px;
+      margin-top: 10px;
+    }
+
+    .message { color: green; display: none; }
+    .error { color: red; }
+
+    .links {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .links a {
+      text-decoration: none;
+      color: #3498db;
+    }
+
+    .theme-toggle, .scroll-top, .lang-toggle {
+      position: fixed;
+      right: 20px;
+      background: #3498db;
+      color: #fff;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      z-index: 999;
+    }
+
+    .theme-toggle { top: 20px; }
+    .lang-toggle { top: 65px; }
+    .scroll-top { bottom: 20px; display: none; }
+
+    .dark-mode {
+      background-color: #1c1c1c;
+      color: #f1f1f1;
+    }
+
+    .dark-mode header { background-color: #111; }
+    .dark-mode main { background-color: #2c2c2c; }
+    .dark-mode input { background-color: #444; color: white; border-color: #666; }
+    .dark-mode .links a { color: #1abc9c; }
+
+    @media (max-width: 500px) {
+      main { margin: 20px; padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <button class="theme-toggle" onclick="toggleTheme()">🌙 / ☀️</button>
+  <button class="lang-toggle" onclick="switchLang()">🌐 Тіл</button>
+  <button class="scroll-top" onclick="scrollToTop()" id="scrollBtn">↑</button>
+
+  <header>
+    <h1>Жеке кабинетке кіру</h1>
+  </header>
+
+  <main>
+    <form id="login-form">
+      <div class="error" id="error-msg"></div>
+
+      <label for="email">Email:</label>
+      <input type="email" id="email" required placeholder="Email енгізіңіз"/>
+
+      <label for="password">Құпиясөз:</label>
+      <div class="password-wrapper">
+        <input type="password" id="password" required placeholder="Құпиясөз енгізіңіз"/>
+        <span class="toggle-password" onclick="togglePassword()">👁</span>
+      </div>
+
+      <label class="remember"><input type="checkbox" id="rememberMe"> Мені есте сақтау</label>
+
+      <button type="submit">Кіру</button>
+    </form>
+
+    <div class="message" id="success-msg">✅ Сәтті кірдіңіз!</div>
+
+    <div class="links">
+      <a href="register.html">Аккаунт жоқ па? Тіркелу</a><br>
+      <a href="index.html">← Басты бетке оралу</a>
+    </div>
+  </main>
+
+  <script>
+    let attempts = 0;
+
+    function toggleTheme() {
+      document.body.classList.toggle("dark-mode");
+      localStorage.setItem("theme", document.body.classList.contains("dark-mode") ? "dark" : "light");
+    }
+
+    function loadTheme() {
+      if (localStorage.getItem("theme") === "dark") {
+        document.body.classList.add("dark-mode");
+      }
+    }
+
+    function togglePassword() {
+      const input = document.getElementById("password");
+      input.type = input.type === "password" ? "text" : "password";
+    }
+
+    function scrollToTop() {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function showScrollButton() {
+      document.getElementById("scrollBtn").style.display =
+        window.scrollY > 100 ? "block" : "none";
+    }
+
+    function loadSaved() {
+      if (localStorage.getItem("remember") === "true") {
+        document.getElementById("email").value = localStorage.getItem("savedEmail") || "";
+        document.getElementById("rememberMe").checked = true;
+      }
+    }
+
+    function switchLang() {
+      const langs = ['kk', 'ru', 'en'];
+      let current = localStorage.getItem('lang') || 'kk';
+      const next = langs[(langs.indexOf(current) + 1) % langs.length];
+      localStorage.setItem('lang', next);
+      alert(`🌐 Таңдалған тіл: ${next.toUpperCase()}`);
+    }
+
+    function isSecure(password) {
+      return password.length >= 6 && /[a-z]/i.test(password) && /\d/.test(password);
+    }
+
+    document.getElementById("login-form").addEventListener("submit", function (e) {
+      e.preventDefault();
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value.trim();
+      const error = document.getElementById("error-msg");
+      const success = document.getElementById("success-msg");
+      const remember = document.getElementById("rememberMe").checked;
+
+      error.textContent = "";
+      success.style.display = "none";
+
+      if (!email || !password) {
+        error.textContent = "Барлық өрістерді толтырыңыз.";
+        return;
+      }
+
+      if (!isSecure(password)) {
+        error.textContent = "Құпиясөз 6 таңбадан кем емес және сандарды қамтуы тиіс.";
+        return;
+      }
+
+      if (attempts >= 3) {
+        error.textContent = "3 реттен көп қате. 10 секундтан кейін қайталаңыз.";
+        setTimeout(() => { attempts = 0; error.textContent = ""; }, 10000);
+        return;
+      }
+
+      if (remember) {
+        localStorage.setItem("savedEmail", email);
+        localStorage.setItem("remember", "true");
+      } else {
+        localStorage.removeItem("savedEmail");
+        localStorage.setItem("remember", "false");
+      }
+
+      const history = JSON.parse(localStorage.getItem("loginHistory") || "[]");
+      history.push({ email, date: new Date().toLocaleString("kk-KZ") });
+      localStorage.setItem("loginHistory", JSON.stringify(history.slice(-5)));
+
+      console.log("🕓 Соңғы логиндер:", history.slice(-5));
+
+      // ✅ Админ логика
+      if (email === "admin@site.kz" && password === "admin123") {
+        localStorage.setItem("isAdmin", "true");
+        success.textContent = "👨‍💼 Админ панельге өтіп жатырсыз...";
+        success.style.display = "block";
+        setTimeout(() => window.location.href = "admin.html", 1500);
+        return;
+      }
+
+      // 🧍 Қарапайым қолданушы
+      localStorage.setItem("isAdmin", "false");
+      success.textContent = "✅ Сәтті кірдіңіз!";
+      success.style.display = "block";
+      setTimeout(() => window.location.href = "profile.html", 1500);
+    });
+
+    window.onload = () => {
+      loadTheme();
+      loadSaved();
+      window.addEventListener("scroll", showScrollButton);
+
+      const hour = new Date().getHours();
+      document.documentElement.style.setProperty('--header-bg', hour >= 7 && hour < 19 ? '#2c3e50' : '#1a1a1a');
+    };
+  </script>
+</body>
+</html>
