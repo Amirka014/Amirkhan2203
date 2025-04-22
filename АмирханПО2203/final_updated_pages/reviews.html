@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Пікірлер</title>
+  <style>
+    body {
+      background: #f0f2f5;
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      transition: background-color 0.3s, color 0.3s;
+    }
+    h1 {
+      background-color: #2c3e50;
+      color: white;
+      padding: 20px;
+      margin: 0;
+      text-align: center;
+    }
+    main {
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+    .review-form, .review-card {
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+      margin-bottom: 20px;
+    }
+    .review-form input, .review-form textarea, .review-form select {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+    }
+    .review-form button, .sort-btn, .export-btn {
+      background: #1abc9c;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 15px;
+      margin: 5px;
+    }
+    .review-form button:hover, .sort-btn:hover, .export-btn:hover {
+      background: #16a085;
+    }
+    .review-card .author { font-weight: bold; color: #2c3e50; }
+    .review-card .timestamp { font-size: 13px; color: #888; margin-top: 5px; }
+    .review-card .like-btn, .review-card .dislike-btn {
+      margin-top: 8px;
+      display: inline-block;
+      cursor: pointer;
+      font-size: 18px;
+      margin-right: 10px;
+    }
+    .delete-btn {
+      float: right;
+      color: #e74c3c;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    .back-link {
+      text-align: center;
+      margin: 30px 0;
+    }
+    .back-link a {
+      color: #3498db;
+      text-decoration: none;
+    }
+    .theme-toggle, .clear-btn, .lang-toggle {
+      position: fixed;
+      right: 20px;
+      background: #3498db;
+      color: white;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-size: 14px;
+      cursor: pointer;
+      z-index: 999;
+    }
+    .theme-toggle { top: 20px; }
+    .clear-btn { top: 65px; }
+    .lang-toggle { top: 110px; }
+    .dark-mode {
+      background-color: #1c1c1c;
+      color: #eee;
+    }
+    .dark-mode .review-card, .dark-mode .review-form {
+      background-color: #2c2c2c;
+    }
+    .dark-mode input, .dark-mode textarea, .dark-mode select {
+      background-color: #444;
+      color: white;
+      border-color: #666;
+    }
+    .dark-mode .back-link a {
+      color: #1abc9c;
+    }
+    .dark-mode .theme-toggle, .dark-mode .clear-btn, .dark-mode .lang-toggle {
+      background-color: #1abc9c;
+    }
+    .count-stat, .filter-box {
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 16px;
+    }
+    #preview {
+      margin-top: 10px;
+      font-style: italic;
+      color: #555;
+    }
+    .search-input {
+      width: 60%;
+      padding: 8px;
+      margin: 10px auto 20px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      display: block;
+    }
+    .avg-rating {
+      text-align: center;
+      font-size: 18px;
+      margin-bottom: 15px;
+      font-weight: 600;
+      color: #333;
+    }
+    @media (max-width: 600px) {
+      .search-input {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body onload="initPage()">
+
+  <button class="theme-toggle" onclick="toggleTheme()">🌙 / ☀️</button>
+  <button class="clear-btn" onclick="clearAllReviews()">🗑 Өшіру</button>
+  <button class="lang-toggle" onclick="switchLang()">🌐 Тіл</button>
+
+  <h1>🧭 Саяхатшылар пікірі</h1>
+
+  <main>
+    <div class="review-form">
+      <h2>Пікір қалдыру</h2>
+      <form id="review-form">
+        <input type="text" id="name" placeholder="Атыңыз" required />
+        <textarea id="review" rows="3" placeholder="Пікіріңіз" required></textarea>
+        <div id="preview"></div>
+        <select id="rating">
+          <option value="5">⭐⭐⭐⭐⭐ (5)</option>
+          <option value="4">⭐⭐⭐⭐ (4)</option>
+          <option value="3">⭐⭐⭐ (3)</option>
+          <option value="2">⭐⭐ (2)</option>
+          <option value="1">⭐ (1)</option>
+        </select>
+        <button type="submit">✅ Жіберу</button>
+      </form>
+    </div>
+
+    <div class="avg-rating" id="avgRating">⭐ Орташа баға: ...</div>
+
+    <input type="text" class="search-input" id="search" placeholder="🔍 Іздеу..." oninput="renderReviews()"/>
+
+    <div class="filter-box">
+      <button class="sort-btn" onclick="sortBy('date')">📅 Жаңа алдымен</button>
+      <button class="sort-btn" onclick="sortBy('rating')">⭐ Рейтинг бойынша</button>
+      <button class="export-btn" onclick="exportJSON()">📥 Экспорт JSON</button>
+    </div>
+
+    <div class="count-stat" id="reviewCount">Пікірлер жүктелуде...</div>
+    <div id="reviews-container"></div>
+  </main>
+
+  <div class="back-link">
+    <a href="index.html">← Басты бетке оралу</a>
+  </div>
+
+  <script>
+    let sortType = "date";
+
+    function initPage() {
+      if (localStorage.getItem("theme") === "dark") {
+        document.body.classList.add("dark-mode");
+      }
+
+      document.getElementById("review").addEventListener("input", () => {
+        const val = document.getElementById("review").value.trim();
+        sessionStorage.setItem("preview", val);
+        document.getElementById("preview").textContent = val ? "✍️ Превью: " + val : "";
+      });
+
+      document.getElementById("review").value = sessionStorage.getItem("preview") || "";
+      renderReviews();
+    }
+
+    function toggleTheme() {
+      document.body.classList.toggle("dark-mode");
+      localStorage.setItem("theme", document.body.classList.contains("dark-mode") ? "dark" : "light");
+    }
+
+    function switchLang() {
+      const langs = ['kk', 'ru', 'en'];
+      const current = localStorage.getItem('lang') || 'kk';
+      const next = langs[(langs.indexOf(current) + 1) % langs.length];
+      localStorage.setItem('lang', next);
+      alert("🌐 Таңдалған тіл: " + next.toUpperCase());
+    }
+
+    function saveReview(name, text, rating) {
+      const reviews = JSON.parse(localStorage.getItem("travelReviews")) || [];
+      const now = new Date().toISOString();
+      reviews.push({ name, text, rating, date: now, likes: 0, dislikes: 0 });
+      localStorage.setItem("travelReviews", JSON.stringify(reviews));
+      sessionStorage.removeItem("preview");
+    }
+
+    function renderReviews() {
+      const search = document.getElementById("search").value.toLowerCase();
+      const container = document.getElementById("reviews-container");
+      let reviews = JSON.parse(localStorage.getItem("travelReviews")) || [];
+
+      reviews = reviews.filter(r =>
+        r.name.toLowerCase().includes(search) || r.text.toLowerCase().includes(search)
+      );
+
+      if (sortType === "rating") {
+        reviews.sort((a, b) => b.rating - a.rating);
+      } else {
+        reviews.sort((a, b) => new Date(b.date) - new Date(a.date));
+      }
+
+      const total = reviews.length;
+      const avg = total ? (reviews.reduce((s, r) => s + r.rating, 0) / total).toFixed(2) : 0;
+      document.getElementById("avgRating").textContent = `⭐ Орташа баға: ${avg} / 5`;
+
+      container.innerHTML = "";
+      reviews.forEach((r, idx) => {
+        const card = document.createElement("div");
+        card.className = "review-card";
+        card.innerHTML = `
+          <span class="delete-btn" onclick="deleteReview(${idx})">❌</span>
+          <p class="author">${r.name} — ${r.rating}★</p>
+          <p>${r.text}</p>
+          <p class="timestamp">${formatDate(r.date)}</p>
+          <div>
+            <span class="like-btn" onclick="rateReview(${idx}, 'like')">👍 ${r.likes || 0}</span>
+            <span class="dislike-btn" onclick="rateReview(${idx}, 'dislike')">👎 ${r.dislikes || 0}</span>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+
+      document.getElementById("reviewCount").textContent = `Көрсетілген пікірлер: ${reviews.length}`;
+    }
+
+    function rateReview(index, type) {
+      let reviews = JSON.parse(localStorage.getItem("travelReviews")) || [];
+      if (type === 'like') reviews[index].likes = (reviews[index].likes || 0) + 1;
+      if (type === 'dislike') reviews[index].dislikes = (reviews[index].dislikes || 0) + 1;
+      localStorage.setItem("travelReviews", JSON.stringify(reviews));
+      renderReviews();
+    }
+
+    function formatDate(date) {
+      return new Date(date).toLocaleString("kk-KZ", {
+        day: "2-digit", month: "long", year: "numeric",
+        hour: "2-digit", minute: "2-digit"
+      });
+    }
+
+    document.getElementById("review-form").addEventListener("submit", function (e) {
+      e.preventDefault();
+      const name = document.getElementById("name").value.trim();
+      const text = document.getElementById("review").value.trim();
+      const rating = parseInt(document.getElementById("rating").value);
+      if (name.length < 2 || text.length < 5) return;
+      saveReview(name, text, rating);
+      e.target.reset();
+      document.getElementById("preview").textContent = "";
+      renderReviews();
+    });
+
+    function deleteReview(index) {
+      let reviews = JSON.parse(localStorage.getItem("travelReviews")) || [];
+      reviews.splice(index, 1);
+      localStorage.setItem("travelReviews", JSON.stringify(reviews));
+      renderReviews();
+    }
+
+    function sortBy(type) {
+      sortType = type;
+      renderReviews();
+    }
+
+    function clearAllReviews() {
+      if (confirm("Барлық пікірлерді өшіргіңіз келе ме?")) {
+        localStorage.removeItem("travelReviews");
+        renderReviews();
+      }
+    }
+
+    function exportJSON() {
+      const data = localStorage.getItem("travelReviews");
+      const blob = new Blob([data], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "feedbacks.json";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  </script>
+
+</body>
+</html>

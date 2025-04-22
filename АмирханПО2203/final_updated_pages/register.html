@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Тіркелу</title>
+  <style>
+    body {
+      background-color: #f0f2f5;
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+      transition: 0.3s ease;
+    }
+
+    header {
+      background-color: #2c3e50;
+      color: #fff;
+      padding: 20px;
+      text-align: center;
+    }
+
+    main {
+      max-width: 450px;
+      margin: 40px auto;
+      background: #fff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.08);
+    }
+
+    label {
+      font-weight: 600;
+      margin-bottom: 5px;
+      display: block;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 15px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+
+    .input-group {
+      position: relative;
+    }
+
+    .toggle-pass {
+      position: absolute;
+      top: 12px;
+      right: 16px;
+      cursor: pointer;
+      font-size: 14px;
+      color: #3498db;
+    }
+
+    .strength {
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 10px;
+    }
+
+    .error {
+      color: #e74c3c;
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+
+    .success-toast {
+      display: none;
+      background: #2ecc71;
+      color: #fff;
+      text-align: center;
+      padding: 10px;
+      border-radius: 6px;
+      margin-bottom: 15px;
+      animation: fadeInOut 2s ease;
+    }
+
+    @keyframes fadeInOut {
+      0% {opacity: 0;}
+      10% {opacity: 1;}
+      90% {opacity: 1;}
+      100% {opacity: 0;}
+    }
+
+    button {
+      background-color: #3498db;
+      color: #fff;
+      padding: 12px;
+      font-size: 16px;
+      width: 100%;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background-color: #2980b9;
+    }
+
+    .links {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .links a {
+      color: #3498db;
+      text-decoration: none;
+    }
+
+    .theme-toggle, .lang-toggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 8px 14px;
+      background: #3498db;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      cursor: pointer;
+      z-index: 999;
+    }
+
+    .lang-toggle { top: 65px; }
+
+    .dark-mode {
+      background-color: #1c1c1c;
+      color: #f1f1f1;
+    }
+
+    .dark-mode header { background-color: #111; }
+    .dark-mode main { background-color: #2c2c2c; }
+    .dark-mode input { background-color: #444; color: #fff; border-color: #666; }
+    .dark-mode .links a { color: #1abc9c; }
+    .dark-mode button { background-color: #1abc9c; }
+    .dark-mode button:hover { background-color: #16a085; }
+    .dark-mode .success-toast { background-color: #27ae60; }
+
+    @media (max-width: 500px) {
+      main { margin: 20px; padding: 20px; }
+    }
+  </style>
+</head>
+<body onload="initRegister()">
+
+  <button class="theme-toggle" onclick="toggleTheme()">🌙 / ☀️</button>
+  <button class="lang-toggle" onclick="switchLang()">🌐</button>
+
+  <header>
+    <h1>📝 Тіркелу</h1>
+  </header>
+
+  <main>
+    <div id="toast" class="success-toast">🎉 Тіркелу сәтті өтті!</div>
+
+    <form id="register-form">
+      <label for="name">Атыңыз:</label>
+      <input type="text" id="name" required>
+
+      <label for="email">Email:</label>
+      <input type="email" id="email" required oninput="validateEmail()">
+      <div id="email-error" class="error"></div>
+
+      <label for="birthdate">Туған күн:</label>
+      <input type="date" id="birthdate">
+
+      <label for="promo">Промокод:</label>
+      <input type="text" id="promo" placeholder="NAZEK07">
+
+      <label for="password">Құпиясөз:</label>
+      <div class="input-group">
+        <input type="password" id="password" required>
+        <span class="toggle-pass" onclick="togglePassword('password')">Көрсету</span>
+      </div>
+      <div class="strength" id="strength"></div>
+
+      <label for="confirm-password">Құпиясөзді қайталаңыз:</label>
+      <div class="input-group">
+        <input type="password" id="confirm-password" required>
+        <span class="toggle-pass" onclick="togglePassword('confirm-password')">Көрсету</span>
+      </div>
+
+      <div id="error" class="error"></div>
+      <button type="submit">✅ Тіркелу</button>
+    </form>
+
+    <div class="links">
+      <a href="login.html">Аккаунтыңыз бар ма?</a><br>
+      <a href="index.html">← Басты бетке оралу</a>
+    </div>
+  </main>
+
+  <script>
+    const promoCodes = { "NAZEK07": 10, "100BALL": 15 };
+
+    function togglePassword(id) {
+      const input = document.getElementById(id);
+      input.type = input.type === "password" ? "text" : "password";
+      input.nextElementSibling.textContent = input.type === "password" ? "Көрсету" : "Жасыру";
+    }
+
+    function toggleTheme() {
+      document.body.classList.toggle("dark-mode");
+      localStorage.setItem("theme", document.body.classList.contains("dark-mode") ? "dark" : "light");
+    }
+
+    function switchLang() {
+      const langs = ["kk", "ru", "en"];
+      let current = localStorage.getItem("lang") || "kk";
+      let next = langs[(langs.indexOf(current) + 1) % langs.length];
+      localStorage.setItem("lang", next);
+      alert("🌐 Таңдалған тіл: " + next.toUpperCase());
+    }
+
+    function validateEmail() {
+      const email = document.getElementById("email").value;
+      const error = document.getElementById("email-error");
+      if (!email.includes("@") || !email.includes(".")) {
+        error.textContent = "Email дұрыс емес!";
+      } else {
+        error.textContent = "";
+      }
+    }
+
+    function checkPasswordStrength(pass) {
+      const el = document.getElementById("strength");
+      if (pass.length < 6) {
+        el.textContent = "🔴 Әлсіз құпиясөз";
+        el.style.color = "#e74c3c";
+      } else if (/\d/.test(pass) && /[a-z]/i.test(pass)) {
+        el.textContent = "🟢 Жақсы құпиясөз";
+        el.style.color = "#2ecc71";
+      } else {
+        el.textContent = "🟡 Орташа";
+        el.style.color = "#f1c40f";
+      }
+    }
+
+    function initRegister() {
+      if (localStorage.getItem("theme") === "dark") document.body.classList.add("dark-mode");
+      document.getElementById("password").addEventListener("input", (e) => checkPasswordStrength(e.target.value));
+      document.getElementById("name").value = localStorage.getItem("regName") || "";
+      document.getElementById("email").value = localStorage.getItem("regEmail") || "";
+    }
+
+    document.getElementById("register-form").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const name = document.getElementById("name").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const pass = document.getElementById("password").value;
+      const confirm = document.getElementById("confirm-password").value;
+      const promo = document.getElementById("promo").value.trim().toUpperCase();
+      const birth = new Date(document.getElementById("birthdate").value);
+      const errorDiv = document.getElementById("error");
+
+      localStorage.setItem("regName", name);
+      localStorage.setItem("regEmail", email);
+      errorDiv.textContent = "";
+
+      if (!name || !email || !pass || !confirm || !birth) {
+        errorDiv.textContent = "Барлық өрісті толтырыңыз";
+        return;
+      }
+
+      const age = new Date().getFullYear() - birth.getFullYear();
+      if (age < 18) {
+        errorDiv.textContent = "Тіркелу үшін жасыңыз 18-ден жоғары болуы керек.";
+        return;
+      }
+
+      if (pass !== confirm) {
+        errorDiv.textContent = "Құпиясөздер сәйкес келмейді";
+        return;
+      }
+
+      if (pass.length < 6 || !/\d/.test(pass) || !/[a-zA-Z]/.test(pass)) {
+        errorDiv.textContent = "Құпиясөз 6 таңбадан тұруы және әріп пен сан болуы керек";
+        return;
+      }
+
+      const discount = promoCodes[promo] || 0;
+      if (discount > 0) {
+        localStorage.setItem("promoCode", promo);
+        localStorage.setItem("discount", discount);
+      }
+
+      localStorage.setItem("user", JSON.stringify({ name, email, password: pass }));
+
+      // ⏺ Регистрация тарихын сақтау
+      const history = JSON.parse(localStorage.getItem("regHistory") || "[]");
+      history.push({ name, email, date: new Date().toLocaleString("kk-KZ") });
+      localStorage.setItem("regHistory", JSON.stringify(history.slice(-10)));
+
+      localStorage.removeItem("regName");
+      localStorage.removeItem("regEmail");
+
+      document.getElementById("toast").style.display = "block";
+      setTimeout(() => {
+        document.getElementById("toast").style.display = "none";
+        window.location.href = "login.html";
+      }, 2000);
+    });
+  </script>
+
+</body>
+</html>

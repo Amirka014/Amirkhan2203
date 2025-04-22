@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Қолдау қызметі</title>
+  
+  <style>
+    body {
+      background-color: #f0f2f5;
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0; padding: 0;
+      color: #333;
+      transition: background-color 0.4s ease, color 0.4s ease;
+    }
+
+    h1 {
+      background-color: #2c3e50;
+      color: white;
+      padding: 20px;
+      text-align: center;
+      margin: 0;
+      font-size: 26px;
+    }
+
+    .theme-toggle, .lang-toggle, .pdf-export {
+      position: fixed;
+      top: 20px;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      z-index: 999;
+      font-size: 14px;
+      transition: background-color 0.3s ease;
+    }
+
+    .theme-toggle:hover, .lang-toggle:hover, .pdf-export:hover {
+      background-color: #2980b9;
+    }
+
+    .theme-toggle { right: 20px; }
+    .lang-toggle { right: 120px; }
+    .pdf-export { right: 220px; }
+
+    .support-form {
+      max-width: 600px;
+      margin: 40px auto;
+      background-color: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    }
+
+    .support-form label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    .support-form input,
+    .support-form textarea {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 18px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+
+    .support-form input:focus,
+    .support-form textarea:focus {
+      border-color: #3498db;
+      outline: none;
+    }
+
+    .support-form button {
+      background-color: #4CAF50;
+      color: white;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .support-form button:hover {
+      background-color: #3e9445;
+    }
+
+    .confirmation {
+      text-align: center;
+      font-size: 16px;
+      color: green;
+      margin-top: 15px;
+      opacity: 0;
+      transition: opacity 0.6s ease;
+    }
+
+    .confirmation.visible {
+      opacity: 1;
+    }
+
+    .contact-info, .history {
+      text-align: center;
+      margin-top: 30px;
+      font-size: 16px;
+    }
+
+    .contact-info a, .back-link a {
+      color: #3498db;
+      text-decoration: none;
+    }
+
+    .contact-info a:hover, .back-link a:hover {
+      text-decoration: underline;
+    }
+
+    .back-link {
+      text-align: center;
+      margin-top: 30px;
+    }
+
+    .history-list {
+      max-width: 600px;
+      margin: 20px auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      font-size: 14px;
+      text-align: left;
+    }
+
+    .dark-mode {
+      background-color: #1c1c1c;
+      color: #f0f0f0;
+    }
+
+    .dark-mode .support-form,
+    .dark-mode .contact-info,
+    .dark-mode .history-list {
+      background-color: #2c2c2c;
+      color: #ddd;
+    }
+
+    .dark-mode input,
+    .dark-mode textarea {
+      background-color: #444;
+      color: white;
+      border-color: #666;
+    }
+
+    .dark-mode .contact-info a,
+    .dark-mode .back-link a {
+      color: #1abc9c;
+    }
+
+    @media (max-width: 500px) {
+      .theme-toggle, .lang-toggle, .pdf-export {
+        font-size: 12px;
+        padding: 6px 10px;
+      }
+      .lang-toggle { right: 100px; }
+      .pdf-export { right: 200px; }
+    }
+  </style>
+</head>
+<body onload="loadTheme(); loadUserInfo(); renderHistory();">
+
+  <button class="theme-toggle" onclick="toggleTheme()">🌙 / ☀️</button>
+  <button class="lang-toggle" onclick="switchLanguage()">🌐</button>
+  
+
+  <h1>Қолдау қызметі</h1>
+
+  <div class="support-form">
+    <form id="supportForm">
+      <label for="name">Атыңыз:</label>
+      <input type="text" id="name" required />
+
+      <label for="email">Email:</label>
+      <input type="email" id="email" required />
+
+      <label for="message">Хабарламаңыз:</label>
+      <textarea id="message" rows="5" required></textarea>
+
+      <button type="submit">📩 Жіберу</button>
+    </form>
+    <div class="confirmation" id="confirmation">✅ Рақмет! Біз сізбен жақын арада байланысамыз.</div>
+  </div>
+
+  <div class="history">
+    <h3>📚 Соңғы жіберілген сұраныстар</h3>
+    <div id="historyList" class="history-list"></div>
+  </div>
+
+  <div class="contact-info">
+    <p>Email: <a href="mailto:Nazerke2007@gmail.com">Nazerke2007@gmail.com</a></p>
+    <p>Телефон: <a href="tel:+77474757076">+7 (747) 475-70-76</a></p>
+  </div>
+
+  <div class="back-link">
+    <a href="index.html">← Басты бетке оралу</a>
+  </div>
+
+  <script>
+    const form = document.getElementById("supportForm");
+    const confirmation = document.getElementById("confirmation");
+    const historyList = document.getElementById("historyList");
+
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const name = document.getElementById("name").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const message = document.getElementById("message").value.trim();
+
+      if (!name || !email || !message || !email.includes("@")) {
+        alert("Барлық өрісті дұрыс толтырыңыз.");
+        return;
+      }
+
+      const newMsg = {
+        name, email, message,
+        date: new Date().toLocaleString("kk-KZ")
+      };
+
+      const allMessages = JSON.parse(localStorage.getItem("supportMessages") || "[]");
+      allMessages.push(newMsg);
+      localStorage.setItem("supportMessages", JSON.stringify(allMessages));
+      localStorage.setItem("supportName", name);
+      localStorage.setItem("supportEmail", email);
+
+      form.reset();
+      renderHistory();
+      confirmation.classList.add("visible");
+      setTimeout(() => confirmation.classList.remove("visible"), 4000);
+    });
+
+    function toggleTheme() {
+      document.body.classList.toggle("dark-mode");
+      const mode = document.body.classList.contains("dark-mode") ? "dark" : "light";
+      localStorage.setItem("theme", mode);
+    }
+
+    function loadTheme() {
+      const saved = localStorage.getItem("theme");
+      if (saved === "dark") document.body.classList.add("dark-mode");
+    }
+
+    function loadUserInfo() {
+      const savedName = localStorage.getItem("supportName");
+      const savedEmail = localStorage.getItem("supportEmail");
+      if (savedName) document.getElementById("name").value = savedName;
+      if (savedEmail) document.getElementById("email").value = savedEmail;
+    }
+
+    function switchLanguage() {
+      const current = localStorage.getItem("lang") || "kk";
+      const next = current === "kk" ? "ru" : current === "ru" ? "en" : "kk";
+      localStorage.setItem("lang", next);
+      alert(`🌐 Тіл ауыстырылды: ${next.toUpperCase()}`);
+      location.reload();
+    }
+
+    function renderHistory() {
+      const messages = JSON.parse(localStorage.getItem("supportMessages") || "[]");
+      historyList.innerHTML = messages.length === 0 ? "<p>Сұраныстар жоқ</p>" :
+        messages.slice(-3).reverse().map(msg =>
+          `<div style="margin-bottom:10px">
+             <b>${msg.name}</b> — ${msg.date}<br/>
+             <i>${msg.message}</i>
+          </div>`).join("");
+    }
+
+    async  = window.jspdf;
+      const doc = new jsPDF();
+      doc.setFont("Times", "normal");
+
+      doc.setFontSize(16);
+      doc.text("Қолдау сұраныстары", 20, 20);
+
+      const messages = JSON.parse(localStorage.getItem("supportMessages") || "[]");
+      if (messages.length === 0) {
+        alert("PDF жасау үшін сұраныстар табылмады.");
+        return;
+      }
+
+      let y = 30;
+      doc.setFontSize(12);
+      messages.forEach((msg) => {
+        const fullText = `Аты: ${msg.name}\nEmail: ${msg.email}\nУақыты: ${msg.date}\nХабарлама: ${msg.message}`;
+        const lines = doc.splitTextToSize(fullText, 170);
+        lines.forEach((line) => {
+          if (y > 270) {
+            doc.addPage();
+            y = 20;
+            doc.setFont("Times", "normal");
+          }
+          doc.text(line, 20, y);
+          y += 8;
+        });
+        y += 5;
+      });
+
+      
+  </script>
+</body>
+</html>

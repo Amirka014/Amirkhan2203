@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>🎁 Промокод енгізу</title>
+  <style>
+    body {
+      background-color: #f0f2f5;
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    header {
+      background-color: #2c3e50;
+      color: white;
+      text-align: center;
+      padding: 20px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    main {
+      max-width: 500px;
+      margin: 40px auto;
+      background-color: white;
+      padding: 30px;
+      border-radius: 12px;
+      text-align: center;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    input {
+      width: 80%;
+      padding: 12px;
+      font-size: 16px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      margin-top: 10px;
+      transition: border-color 0.3s ease;
+      text-transform: uppercase;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #3498db;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 12px 24px;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #2980b9;
+    }
+
+    .copy-btn {
+      background-color: #1abc9c;
+      margin-left: 10px;
+    }
+
+    .copy-btn:hover {
+      background-color: #16a085;
+    }
+
+    .message {
+      margin-top: 20px;
+      font-size: 16px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .shake {
+      animation: shake 0.4s ease;
+    }
+
+    @keyframes shake {
+      0% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      50% { transform: translateX(5px); }
+      75% { transform: translateX(-5px); }
+      100% { transform: translateX(0); }
+    }
+
+    .timer {
+      font-size: 14px;
+      color: #888;
+      margin-top: 10px;
+    }
+
+    .back-link {
+      text-align: center;
+      margin: 30px 0;
+    }
+
+    .back-link a {
+      color: #3498db;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .back-link a:hover {
+      text-decoration: underline;
+    }
+
+    .theme-toggle, .lang-toggle {
+      position: fixed;
+      right: 20px;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      z-index: 999;
+      font-size: 14px;
+    }
+
+    .theme-toggle { top: 20px; }
+    .lang-toggle { top: 65px; }
+
+    .dark-mode {
+      background-color: #1c1c1c;
+      color: #f1f1f1;
+    }
+
+    .dark-mode header { background-color: #111; }
+    .dark-mode main { background-color: #2c2c2c; }
+    .dark-mode input {
+      background-color: #444;
+      color: white;
+      border-color: #666;
+    }
+    .dark-mode .back-link a { color: #1abc9c; }
+    .dark-mode button { background-color: #1abc9c; }
+    .dark-mode button:hover { background-color: #16a085; }
+
+    @media (max-width: 500px) {
+      main { margin: 20px; padding: 20px; }
+      input { width: 100%; }
+    }
+  </style>
+</head>
+<body onload="initPage()">
+
+  <button class="theme-toggle" onclick="toggleTheme()">🌙 / ☀️</button>
+  <button class="lang-toggle" onclick="switchLang()">🌐</button>
+
+  <header>
+    <h1>🎁 Промокод енгізіңіз</h1>
+  </header>
+
+  <main>
+    <input type="text" id="promo" placeholder="Мысалы: TRAVEL2025" />
+    <br />
+    <button onclick="checkPromo()">Жеңілдік алу</button>
+    <button class="copy-btn" onclick="copyPromo()">📋 Көшіру</button>
+
+    <p class="message" id="promo-msg"></p>
+    <p class="timer" id="promo-timer"></p>
+  </main>
+
+  <div class="back-link">
+    <a href="index.html">← Басты бетке оралу</a>
+  </div>
+
+  <script>
+    const validCodes = {
+      "NAZEK07": 10,
+      "100BALL": 15,
+      "KZEKB": 5
+    };
+
+    function toggleTheme() {
+      document.body.classList.toggle("dark-mode");
+      localStorage.setItem("theme", document.body.classList.contains("dark-mode") ? "dark" : "light");
+    }
+
+    function loadTheme() {
+      if (localStorage.getItem("theme") === "dark") {
+        document.body.classList.add("dark-mode");
+      }
+    }
+
+    function checkPromo() {
+      const input = document.getElementById("promo");
+      const code = input.value.trim().toUpperCase();
+      const message = document.getElementById("promo-msg");
+      const timer = document.getElementById("promo-timer");
+
+      if (validCodes[code]) {
+        const percent = validCodes[code];
+        const expire = new Date().getTime() + 300000; // 5 минут
+        localStorage.setItem("discount", percent);
+        localStorage.setItem("promoCode", code);
+        localStorage.setItem("promoExpire", expire);
+
+        message.textContent = `✅ Құттықтаймыз! ${percent}% жеңілдік белсендірілді.`;
+        message.style.color = "#27ae60";
+        input.classList.remove("shake");
+        startTimer(expire);
+      } else {
+        message.textContent = "❌ Кешіріңіз, промокод жарамсыз.";
+        message.style.color = "#e74c3c";
+        input.classList.add("shake");
+        setTimeout(() => input.classList.remove("shake"), 400);
+        localStorage.removeItem("discount");
+        localStorage.removeItem("promoExpire");
+        timer.textContent = "";
+      }
+    }
+
+    function startTimer(expireTime) {
+      const timer = document.getElementById("promo-timer");
+      const interval = setInterval(() => {
+        const now = new Date().getTime();
+        const distance = expireTime - now;
+        if (distance < 0) {
+          clearInterval(interval);
+          timer.textContent = "⏰ Жеңілдік мерзімі аяқталды.";
+          localStorage.removeItem("discount");
+          localStorage.removeItem("promoExpire");
+          return;
+        }
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+        timer.textContent = `⏳ ${minutes} мин ${seconds} сек қалды`;
+      }, 1000);
+    }
+
+    function initPage() {
+      loadTheme();
+
+      const code = localStorage.getItem("promoCode");
+      const discount = localStorage.getItem("discount");
+      const expire = localStorage.getItem("promoExpire");
+
+      if (code && discount && expire) {
+        document.getElementById("promo").value = code;
+        document.getElementById("promo-msg").textContent = `🎉 Сақталған жеңілдік: ${discount}%`;
+        document.getElementById("promo-msg").style.color = "#27ae60";
+        startTimer(Number(expire));
+      }
+    }
+
+    function copyPromo() {
+      const input = document.getElementById("promo");
+      navigator.clipboard.writeText(input.value)
+        .then(() => alert("Промокод буферге көшірілді!"))
+        .catch(() => alert("Қате: көшіру мүмкін болмады."));
+    }
+
+    function switchLang() {
+      const langs = ['kk', 'ru', 'en'];
+      let current = localStorage.getItem('lang') || 'kk';
+      const next = langs[(langs.indexOf(current) + 1) % langs.length];
+      localStorage.setItem('lang', next);
+      alert("🌐 Таңдалған тіл: " + next.toUpperCase());
+    }
+  </script>
+
+</body>
+</html>

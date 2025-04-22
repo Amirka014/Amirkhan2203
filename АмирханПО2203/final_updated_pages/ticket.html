@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🎟️ Билетіңіз</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: #f0f2f5;
+      color: #2c3e50;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    .ticket {
+      background: linear-gradient(135deg, #ffffff, #f9f9f9);
+      border: 2px dashed #3498db;
+      border-radius: 16px;
+      padding: 30px;
+      width: 90%;
+      max-width: 480px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      text-align: center;
+      position: relative;
+      animation: fadeIn 0.5s ease;
+    }
+
+    .ticket::before,
+    .ticket::after {
+      content: '';
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background: #f0f2f5;
+      border-radius: 50%;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    .ticket::before {
+      left: -10px;
+    }
+
+    .ticket::after {
+      right: -10px;
+    }
+
+    h1 {
+      font-size: 24px;
+      margin-bottom: 20px;
+      color: #1abc9c;
+    }
+
+    .detail {
+      font-size: 17px;
+      margin: 8px 0;
+    }
+
+    .icon {
+      font-size: 22px;
+      margin-right: 8px;
+    }
+
+    .code {
+      margin-top: 20px;
+      font-size: 20px;
+      font-weight: bold;
+      color: #2980b9;
+    }
+
+    .status {
+      margin-top: 10px;
+      font-size: 16px;
+      color: green;
+    }
+
+    .back {
+      margin-top: 25px;
+    }
+
+    .back a {
+      color: #3498db;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .theme-toggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #3498db;
+      color: white;
+      padding: 8px 14px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .dark-mode {
+      background-color: #1c1c1c;
+      color: #f1f1f1;
+    }
+
+    .dark-mode .ticket {
+      background: #2c2c2c;
+      border-color: #1abc9c;
+    }
+
+    .dark-mode .ticket::before,
+    .dark-mode .ticket::after {
+      background-color: #1c1c1c;
+    }
+
+    .dark-mode .code {
+      color: #1abc9c;
+    }
+
+    .dark-mode .status {
+      color: #27ae60;
+    }
+
+    .dark-mode .back a {
+      color: #1abc9c;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body onload="loadTicket()">
+  <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
+
+  <div class="ticket">
+    <h1>🎟️ Саяхат билеті</h1>
+    <div class="detail"><span class="icon">📍</span><strong id="route"></strong></div>
+    <div class="detail"><span class="icon">👥</span><span id="people"></span> адам</div>
+    <div class="detail"><span class="icon">💸</span><span id="price"></span> ₸</div>
+    <div class="detail"><span class="icon">📅</span><span id="date"></span></div>
+    <div class="code" id="ticketNumber">Билет №: ...</div>
+    <div class="status">✅ Төлем сәтті өтті</div>
+
+    <div class="back">
+      <a href="index.html">← Басты бетке оралу</a>
+    </div>
+  </div>
+
+  <script>
+    function loadTicket() {
+      const p = new URLSearchParams(window.location.search);
+      document.getElementById("route").textContent = decodeURIComponent(p.get("route") || "Маршрут жоқ");
+      document.getElementById("people").textContent = p.get("peopleCount") || "1";
+      document.getElementById("price").textContent = p.get("price") || "0";
+      document.getElementById("ticketNumber").textContent = "🎫 Билет №: " + (p.get("ticketNumber") || "???");
+
+      const now = new Date();
+      document.getElementById("date").textContent = now.toLocaleDateString("kk-KZ") + " " + now.toLocaleTimeString("kk-KZ");
+
+      if (localStorage.getItem("theme") === "dark") {
+        document.body.classList.add("dark-mode");
+      }
+    }
+
+    function toggleTheme() {
+      document.body.classList.toggle("dark-mode");
+      localStorage.setItem("theme", document.body.classList.contains("dark-mode") ? "dark" : "light");
+    }
+  </script>
+</body>
+</html>
